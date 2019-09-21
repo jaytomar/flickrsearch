@@ -1,0 +1,26 @@
+.search-btn{
+    border: none;
+    height: 34px;
+    width: 100px;
+    background-color: rgb(13, 126, 231);
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    outline: 0;
+    color: white;
+}
+
+.search-box{
+    outline: 0;
+    border: 1px grey solid;
+    padding-left: 10px;
+    width: 60%;
+    height: 30px;
+    border-bottom-left-radius: 10px;
+    border-top-left-radius: 10px;
+}
+
+
+form{
+    display: flex;
+    justify-content: center;
+}
