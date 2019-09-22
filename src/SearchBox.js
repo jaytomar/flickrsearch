@@ -4,6 +4,7 @@ import axios from 'axios'
 import ImageBox from './ImageBox'
 import './imagebox.css'
 
+
 class SearchBox extends React.Component {
     constructor(props){
         super(props)
@@ -11,18 +12,19 @@ class SearchBox extends React.Component {
         this.handleSubmit=this.handleSubmit.bind(this);
     }
     state = {
-        input:'',
+        input:null,
         data:[],
         loading : false,
         resulttext : 'Here are some recent images...'
     }
 
     componentDidMount(){
-        if(this.state.input==''){
+        if(this.state.input===null||this.state.input===''){
             axios.get('https://www.flickr.com/services/rest/?method=flickr.photos.getRecent&api_key=7eab7a0d9b8a6e68d192a607690bb0da&per_page=10&format=json&nojsoncallback=1')
             .then((res)=>{
-                console.log(res);
+                // console.log(res);
                 this.setState({
+                    loading:false,             
                     data:res.data.photos.photo
                 })
             })
@@ -33,10 +35,11 @@ class SearchBox extends React.Component {
 
     }
 
-
-
-handleSubmit(e){
-    e.preventDefault();
+fetchData(){
+    this.setState({
+        loading:true
+    })
+    // console.log(this.state);
     axios.get('https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=7eab7a0d9b8a6e68d192a607690bb0da&format=json&nojsoncallback=1', {
         params:{
             tags:this.state.input,
@@ -46,26 +49,38 @@ handleSubmit(e){
     })
     .then((res)=>{
         console.log(res);
-        
         this.setState({
             data:res.data.photos.photo,
-            resulttext:'search results...'
+            resulttext:'search results...',
+            loading:false
         })
     })
 }
 
-handleChange(e){
-    console.log(e.target.value);
-    const check=e.target.value;
-    this.setState({input: e.target.value});
+handleSubmit(e){
+    e.preventDefault();
+    this.fetchData();
 }
 
+handleChange(e){
+    this.setState({
+        input: e.target.value
+        }, ()=>{
+        setTimeout(() => {
+            if (this.state.input!=='') 
+            this.fetchData()
+            }, 1500)
+        }
+
+    );
+}
 
 
 
 render(){
     const list = this.state.data.map((data)=>{
         return <ImageBox 
+                key={data.id}
                 title={data.title} 
                 id={data.id} 
                 farmid={data.farm}
@@ -74,28 +89,37 @@ render(){
                 />
             })
     return (
-        <div>
+        <div ref='scroll'>
             <br/><br/><br/>
             <div className='search-container'>
                 <form onSubmit={this.handleSubmit}>
-                <input 
-                type='Text' 
-                name='search' 
-                placeholder='search...' 
-                className='search-box' 
-                onChange={this.handleChange}
-                />
-                <input 
-                type='submit' 
-                className='search-btn' 
-                onClick={this.testfunction}
-                />
+                    <input 
+                    type='Text' 
+                    name='search' 
+                    placeholder='search...' 
+                    className='search-box' 
+                    onChange={this.handleChange}
+                    />
+                    <input 
+                    type='submit' 
+                    className='search-btn' 
+                    onClick={this.testfunction}
+                    />
                 </form>
+                <h3>{this.state.resulttext}</h3>
             </div>
-            <h3>{this.state.resulttext}</h3>
+            
+            { 
+            this.state.loading===false
+            ?
             <div className='main-container'>
                 {list}
             </div>
+            :
+            <div className='main-container'>
+                <div className="loader"></div>
+            </div>
+            }
         </div>
         );
     }
