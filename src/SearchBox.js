@@ -18,7 +18,8 @@ class SearchBox extends React.Component {
         data:[],
         loading : false,
         resulttext : 'Here are some recent images...',
-        pastSearches : []
+        pastSearches : [],
+        currentPage : 1
     }
 
     componentDidMount(){
@@ -28,7 +29,14 @@ class SearchBox extends React.Component {
         else{
             this.fetchData();
         }
-        
+        document.addEventListener('scroll', (e)=>{
+            const el=e.target.documentElement;       
+            const bottom = parseInt(el.scrollHeight) - Math.ceil(el.scrollTop) === parseInt(el.clientHeight);
+                if (bottom) {
+                    this.fetchMore()
+                }
+            }
+        )
 
     }
 
@@ -60,14 +68,51 @@ fetchData(){
         })
         .then((res)=>{
             // console.log(res);
+            console.log(res.data.photos.total);
+            if (res.data.photos.total==0) {
+                this.setState({
+                    resulttext:'No images found for ' + this.state.input,
+                    loading:false
+                })
+            }
+            else{
+                this.setState({
+                    data:res.data.photos.photo,
+                    resulttext:'showing search results for ' + this.state.input,
+                    loading:false
+                })
+            }
+        })
+    }
+}
+
+fetchMore(){
+    this.setState({
+        currentPage: this.state.currentPage+1
+    }, ()=>{
+    if (this.state.input===undefined || this.state.input==='')
+    this.fetchRecent();
+    else{
+        axios.get('https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=7eab7a0d9b8a6e68d192a607690bb0da&format=json&nojsoncallback=1', {
+            params:{
+                tags:this.state.input,
+                per_page:12,
+                page:this.state.currentPage
+            }
+        })
+        .then((res)=>{
+            // console.log(res);
+            const newdata = this.state.data.concat(res.data.photos.photo);
             this.setState({
-                data:res.data.photos.photo,
-                resulttext:'showing search results for ' + this.state.input,
+                data:newdata,
                 loading:false
             })
         })
     }
+    }
+    )
 }
+
 
 handleSubmit(e){
     e.preventDefault();
@@ -118,10 +163,10 @@ render(){
     // console.log(this.state.input);
     
     // console.log(this.props.history);
-    // console.log(this.state);
+    // console.log(this.state.data);
 
     const pastSearches = this.state.pastSearches.map((search)=>{
-        return <a key={search} href={"/?search="+search}>{search}</a> 
+        return <a href={"/?search="+search}>{search}</a> 
     })
     const list = this.state.data.map((data)=>{
         return <ImageBox 
@@ -168,6 +213,9 @@ render(){
                 <div className="loader"></div>
             </div>
             }
+            
+            <footer>
+            </footer>
         </div>
         );
     }

@@ -14,7 +14,7 @@ export default class ImageBox extends React.Component {
         const imgurl=`https://farm${this.props.farmid}.staticflickr.com/${this.props.server}/${this.props.id}_${this.props.secret}_z.jpg`
         return(
             <div>
-                <div className='preview-box' data-aos="fade-up">
+                <div className='preview-box' >
                     <div className='img-container2'>
                         <div className='img-container'>
                             <img src={imgurl} alt="" />
