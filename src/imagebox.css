@@ -1,5 +1,5 @@
 body{
-    font-family: lato;
+    font-family: Helvetica neue;
 
 }
 
@@ -54,3 +54,7 @@ h3{
     100% { transform: rotate(360deg); }
   }
   
+  .past-searches{
+    width: 60%;
+    text-decoration: none;
+}

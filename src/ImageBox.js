@@ -11,7 +11,7 @@ export default class ImageBox extends React.Component {
     render(){
 
         // console.log(this.props);
-        const imgurl=`https://farm${this.props.farmid}.staticflickr.com/${this.props.server}/${this.props.id}_${this.props.secret}.jpg`
+        const imgurl=`https://farm${this.props.farmid}.staticflickr.com/${this.props.server}/${this.props.id}_${this.props.secret}_z.jpg`
         return(
             <div>
                 <div className='preview-box' data-aos="fade-up">
